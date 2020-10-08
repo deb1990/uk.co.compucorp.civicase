@@ -3,7 +3,7 @@
 /**
  * Changes the label of buttons in the create pdf popup.
  */
-class CRM_Civicase_Hook_BuildForm_ButtonsLableChange {
+class CRM_Civicase_Hook_BuildForm_PdfFormButtonsLabelChange {
 
   /**
    * Updates form buttons labels.
