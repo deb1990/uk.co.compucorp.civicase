@@ -3,7 +3,7 @@
 /**
  * Makes the subject field required in the create PDF form.
  */
-class CRM_Civicase_Hook_BuildForm_PdfFormSubjectRequired {
+class CRM_Civicase_Hook_BuildForm_MakePdfFormSubjectRequired {
 
   /**
    * Makes the subject field required in the create PDF form.
