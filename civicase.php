@@ -214,6 +214,7 @@ function civicase_civicrm_buildForm($formName, &$form) {
     new CRM_Civicase_Hook_BuildForm_LinkToCaseSearchByCaseId(),
     new CRM_Civicase_Hook_BuildForm_RemoveExportActionFromReports(),
     new CRM_Civicase_Hook_BuildForm_MakePdfFormSubjectRequired(),
+    new CRM_Civicase_Hook_BuildForm_PdfFormButtonsLabelChange(),
   ];
 
   foreach ($hooks as $hook) {
