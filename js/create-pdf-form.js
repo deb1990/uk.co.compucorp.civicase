@@ -1,37 +1,48 @@
-(function ($) {
+(function ($, _, currentCaseCategory) {
   $(document).on('crmLoad', function () {
+    (function init () {
+      var $pdfSaveAndCreateButtonSelector = '[data-identifier="buttons[_qf_PDF_upload]"]';
+
+      $('body').off('click', $pdfSaveAndCreateButtonSelector);
+      $('body').on('click', $pdfSaveAndCreateButtonSelector, redirectOnFileDownload);
+    })();
+
     /**
      * Redirect the user after pdf generation.
      */
     function redirectOnFileDownload () {
-      if (isFormValid()) {
-        var caseId = getCaseId();
-        if (caseId) {
-          var urlWithTab = updateQueryStringParameter('tab', 'Activities');
-          document.location = updateQueryStringParameter('caseId', caseId, urlWithTab);
-        } else {
-          if ($('.ui-tabs-anchor[title="Activities"]').length) {
-            $('.ui-tabs-anchor[title="Activities"]').click();
-          }
-        }
-        $('.ui-dialog-titlebar-close').click();
+      if (!isFormValid()) {
+        return;
       }
+
+      var caseId = getCaseId();
+      var $activityTabInContactRecordScreen = $('.ui-tabs-anchor[title="Activities"]');
+
+      if (caseId) {
+        var activityTabUrl = '/civicrm/case/a/?' +
+          'case_type_category=' + currentCaseCategory +
+          '#/case/list?cf={"case_type_category":"' + currentCaseCategory + '"}' +
+          '&caseId=' + caseId + '&focus=1&tab=Activities';
+
+        document.location = activityTabUrl;
+      } else if ($activityTabInContactRecordScreen.length) {
+        $activityTabInContactRecordScreen.click();
+      }
+
+      $('.ui-dialog-titlebar-close').click();
     }
 
     /**
-     * Returns the case id if available otherwise 0.
+     * Returns the case id if available.
      *
      * @returns {number} case id.
      */
     function getCaseId () {
       var entryUrlElem = $('[name="entryURL"]');
-      var caseId = 0;
       if (entryUrlElem.length) {
         var entryUrl = entryUrlElem.val();
-        caseId = getParameterByName('caseid', entryUrl);
+        return getParameterByName('caseid', entryUrl);
       }
-
-      return caseId;
     }
 
     /**
@@ -50,42 +61,28 @@
      * @param {string} url query string.
      * @returns {any} parameter value.
      */
-    function getParameterByName (name, url = window.location.href) {
-      name = name.replace(/[[]]/g, '\\$&');
-      var regex = new RegExp('[?&;]' + name + '(=([^&#]*)|&|#|$)');
-      var results = regex.exec(url);
-      if (!results) {
-        return null;
-      }
-      if (!results[2]) {
-        return '';
-      }
-      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    function getParameterByName (name, url) {
+      url = parse(decodeURIComponent(url || window.location.href));
+
+      return url[name];
     }
 
     /**
-     * Add or update a parameter in a url.
+     * Parses sent url inot json object
      *
-     * @param {string} key parameter name.
-     * @param {any} value parameter value.
-     * @param {string} uri query string.
-     * @returns {string} updates query string.
+     * @param {string} url the URL to use for parsing its parameter
+     * @returns {object} returns the given URL's parameters as an object.
      */
-    function updateQueryStringParameter (key, value, uri = window.location.href) {
-      var re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i');
-      var separator = uri.indexOf('?') !== -1 ? '&' : '?';
-      if (uri.match(re)) {
-        return uri.replace(re, '$1' + key + '=' + value + '$2');
-      } else {
-        return uri + separator + key + '=' + value;
-      }
-    }
+    function parse (url) {
+      var urlParamPairs = url.split('?')
+        .slice(1)
+        .join('')
+        .split('&amp;')
+        .map(function (paramNameAndValue) {
+          return paramNameAndValue.split('=');
+        });
 
-    $('body').off('click', '[data-identifier="buttons[_qf_PDF_upload]"]');
-    $('body').on('click', '[data-identifier="buttons[_qf_PDF_upload]"]', function () {
-      setTimeout(function () {
-        redirectOnFileDownload();
-      }, 200);
-    });
+      return _.zipObject(urlParamPairs);
+    }
   });
-})(CRM.$);
+})(CRM.$, CRM._, CRM['civicase-base'].currentCaseCategory);
