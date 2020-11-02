@@ -10,6 +10,8 @@ use CRM_Civicase_Uninstall_RemoveCustomGroupSupportForCaseCategory as RemoveCust
 use CRM_Civicase_Setup_ProcessCaseCategoryForCustomGroupSupport as ProcessCaseCategoryForCustomGroupSupport;
 use CRM_Civicase_Setup_CaseCategoryInstanceSupport as CaseCategoryInstanceSupport;
 use CRM_Civicase_Setup_AddChangeCaseRoleDateActivityTypes as AddChangeCaseRoleDateActivityTypes;
+use CRM_Civicase_Setup_AddManageWorkflowMenu as AddManageWorkflowMenu;
+use CRM_Civicase_Service_CaseCategoryInstance as CaseCategoryInstance;
 
 /**
  * Collection of upgrade steps.
@@ -244,7 +246,7 @@ class CRM_Civicase_Upgrader extends CRM_Civicase_Upgrader_Base {
    * Fixes original id of followup activities to point to the original activity
    * and not a revision.
    *
-   * TODO: This is a WIP (untested) and not yet called from anywhere.
+   * @todo This is a WIP (untested) and not yet called from anywhere.
    * When it's ready we can change its name to upgrade_000X and call it from
    * the installer.
    */
@@ -254,7 +256,7 @@ class CRM_Civicase_Upgrader extends CRM_Civicase_Upgrader_Base {
       WHERE a.parent_id = b.id
       AND b.original_id IS NOT NULL';
     CRM_Core_DAO::executeQuery($sql);
-    // TODO: before we uncomment the below, need to migrate this history
+    // @todo before we uncomment the below, need to migrate this history
     // to advanced logging table.
     // CRM_Core_DAO::executeQuery('DELETE FROM civicrm_activity WHERE
     // original_id IS NOT NULL');.
@@ -394,6 +396,12 @@ class CRM_Civicase_Upgrader extends CRM_Civicase_Upgrader_Base {
     $this->swapCaseMenuItems();
 
     $this->toggleNav('Manage Cases', TRUE);
+
+    $instanceObj = new CaseCategoryInstance();
+    $instanceObj->assignInstanceForExistingCaseCategories();
+
+    $workflowMenu = new AddManageWorkflowMenu();
+    $workflowMenu->apply();
   }
 
   /**

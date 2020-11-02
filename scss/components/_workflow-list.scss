@@ -1,0 +1,16 @@
+.civicase-workflow-list {
+  > .panel-body {
+    padding: 0;
+  }
+}
+
+
+.civicase-workflow-list_duplicate-form {
+  .ng-invalid:not(.ng-untouched) {
+    border-color: $brand-danger;
+  }
+
+  textarea {
+    width: 100%;
+  }
+}

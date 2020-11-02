@@ -19,15 +19,17 @@
      * Returns an instance of the case type service.
      *
      * @param {object} DashboardCaseTypeItems the dashboard case type items.
+     * @param {object} RelationshipType relationship type service.
      * @returns {object} the case type service.
      */
-    function $get (DashboardCaseTypeItems) {
+    function $get (DashboardCaseTypeItems, RelationshipType) {
       return {
         getAll: getAll,
         getByCategory: getByCategory,
         getById: getById,
         getItemsForCaseType: getItemsForCaseType,
-        getTitlesForNames: getTitlesForNames
+        getTitlesForNames: getTitlesForNames,
+        getAllRolesByCategoryID: getAllRolesByCategory
       };
 
       /**
@@ -38,6 +40,31 @@
        */
       function getItemsForCaseType (caseTypeName) {
         return DashboardCaseTypeItems[caseTypeName] || [];
+      }
+
+      /**
+       * @param {string|number} caseTypeCategoryID case type category id
+       * @returns {object[]} case roles for the given category id
+       */
+      function getAllRolesByCategory (caseTypeCategoryID) {
+        var allCaseTypesForGivenCategory = getByCategory(caseTypeCategoryID);
+
+        // console.log(allCaseTypesForGivenCategory);
+        return _.chain(allCaseTypesForGivenCategory)
+          .map('definition')
+          .map('caseRoles')
+          .flatten()
+          .uniq('name') // removes same role present in different case types
+          .map(function (caseRole) {
+            var relationshipType = RelationshipType.getByName(caseRole.name);
+
+            return {
+              id: relationshipType.id,
+              name: caseRole.name
+            };
+          })
+          .uniq('id') // removes different versions of the same role(A-B or B-A)
+          .value();
       }
     }
 

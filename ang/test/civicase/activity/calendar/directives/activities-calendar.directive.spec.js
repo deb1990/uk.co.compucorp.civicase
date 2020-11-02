@@ -15,6 +15,7 @@
       $route = { current: { params: {} } };
 
       $provide.value('$route', $route);
+      $provide.value('civicaseCrmApi', jasmine.createSpy('civicaseCrmApi'));
     }));
 
     afterEach(function () {
@@ -697,6 +698,7 @@
 
       $uibPosition.positionElements.and.returnValue({ top: 0, left: 0 });
       $provide.value('$uibPosition', $uibPosition);
+      $provide.value('civicaseCrmApi', jasmine.createSpy('civicaseCrmApi'));
       $provide.decorator('uibDatepickerDirective', function ($delegate) {
         return [{
           restrict: 'A',

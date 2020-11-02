@@ -1,12 +1,12 @@
 /* eslint-env jasmine */
 (() => {
-  describe('parseUrlParameters', () => {
-    let parseUrlParameters;
+  describe('UrlParameters', () => {
+    let UrlParameters;
 
     beforeEach(module('civicase-base'));
 
-    beforeEach(inject((_parseUrlParameters_) => {
-      parseUrlParameters = _parseUrlParameters_;
+    beforeEach(inject((_UrlParameters_) => {
+      UrlParameters = _UrlParameters_;
     }));
 
     describe('when parsing a URL', () => {
@@ -19,7 +19,7 @@
       };
 
       beforeEach(() => {
-        parsedUrlResult = parseUrlParameters(testUrl);
+        parsedUrlResult = UrlParameters.parse(testUrl);
       });
 
       it('returns the URL parameters as an object', () => {

@@ -315,7 +315,9 @@ function civicase_civicrm_buildForm($formName, &$form) {
       'value' => $activityTypeId,
     ];
     if (in_array($activityType, $specialTypes) || ($activityTypeId && civicrm_api3('OptionValue', 'getcount', $checkParams))) {
-      if ($form->_action & (CRM_Core_Action::ADD + CRM_Core_Action::UPDATE)) {
+      $hideDraftButton = CRM_Utils_Request::retrieve('hideDraftButton', 'Boolean', $form);
+
+      if (($form->_action & (CRM_Core_Action::ADD + CRM_Core_Action::UPDATE)) && !$hideDraftButton) {
         $buttonGroup = $form->getElement('buttons');
         $buttons = $buttonGroup->getElements();
         $buttons[] = $form->createElement('submit', $form->getButtonName('refresh'), ts('Save Draft'), [

@@ -37,14 +37,17 @@ module.exports = function (config) {
       // Source Files
       extPath + '/ang/civicase-base.js',
       extPath + '/ang/civicase.js',
+      extPath + '/ang/workflow.js',
       { pattern: extPath + '/ang/civicase-base/**/*.js' },
       { pattern: extPath + '/ang/civicase/**/*.js' },
+      { pattern: extPath + '/ang/workflow/**/*.js' },
 
       // Spec files
       { pattern: extPath + '/ang/test/mocks/modules.mock.js' },
       { pattern: extPath + '/ang/test/mocks/**/*.js' },
       { pattern: extPath + '/ang/test/civicase/**/*.js' },
-      { pattern: extPath + '/ang/test/civicase-base/**/*.js' }
+      { pattern: extPath + '/ang/test/civicase-base/**/*.js' },
+      { pattern: extPath + '/ang/test/workflow/**/*.js' }
     ],
     exclude: [
     ],
@@ -53,6 +56,7 @@ module.exports = function (config) {
       obj[extPath + '/ang/civicase/**/*.html'] = ['ng-html2js'];
       obj[extPath + '/ang/civicase/**/*.js'] = ['coverage'];
       obj[extPath + '/ang/civicase-base/**/*.js'] = ['coverage'];
+      obj[extPath + '/ang/workflow/**/*.js'] = ['coverage'];
 
       return obj;
     })({}),

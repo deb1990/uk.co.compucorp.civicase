@@ -3,7 +3,9 @@
   describe('contactCard', function () {
     var element, civicaseCrmApi, $q, $compile, $rootScope, $scope, ContactsData, ContactsCache;
 
-    beforeEach(module('civicase.templates', 'civicase', 'civicase.data'));
+    beforeEach(module('civicase.templates', 'civicase', 'civicase.data', function ($provide) {
+      $provide.value('civicaseCrmApi', jasmine.createSpy('civicaseCrmApi'));
+    }));
 
     beforeEach(inject(function (_$compile_, _$rootScope_, _$q_, _civicaseCrmApi_,
       _ContactsData_, _ContactsCache_) {

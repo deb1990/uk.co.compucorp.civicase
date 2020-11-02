@@ -7,6 +7,11 @@
     number: 1,
     icon: 'fa-print'
   }, {
+    title: 'Lock Case',
+    action: 'LockCases',
+    number: 1,
+    icon: 'fa-lock'
+  }, {
     title: 'Email Case Manager',
     action: 'EmailManagers',
     icon: 'fa-envelope-o'

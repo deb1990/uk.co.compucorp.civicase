@@ -1,0 +1,54 @@
+<div id="bootstrap-theme">
+  <h1 crm-page-title>{{:: ts('Manage Workflows') }}</h1>
+
+  <div class="text-center" ng-if="workflows.length === 0 && !isLoading">
+    {{:: ts('No workflows are available.') }}
+  </div>
+
+  <div class="panel panel-default civicase-workflow-list" ng-if="workflows.length > 0">
+    <div class="panel-body">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>{{:: ts('Title') }}</th>
+          <th>{{:: ts('Description') }}</th>
+          <th>{{:: ts('Enabled?') }}</th>
+          <th width="20"></th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="workflow in workflows">
+            <td>{{workflow.title}}</td>
+            <td>{{workflow.description}}</td>
+            <td>{{workflow.is_active ? ts('Yes') : ts('No') }}</td>
+            <td>
+              <div
+              class="btn-group btn-group-md"
+              uib-dropdown
+              dropdown-append-to="'#bootstrap-theme'"
+              >
+                <button
+                  class="btn btn-default btn-sm dropdown-toggle"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  uib-dropdown-toggle
+                  aria-label="{{ ts('Actions') }}"
+                >
+                  <i class="material-icons">more_vert</i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
+                  <li ng-repeat="actionItem in actionItems">
+                    <ng-include
+                      civicase-include-replace src="actionItem.templateUrl">
+                    </ng-include>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -10,6 +10,8 @@
 
       beforeEach(module('civicase', 'civicase.data', (_$provide_) => {
         $provide = _$provide_;
+
+        $provide.value('civicaseCrmApi', jasmine.createSpy('civicaseCrmApi'));
       }));
 
       beforeEach(inject((_$controller_, _$rootScope_, _$q_, _CaseTypesMockData_,

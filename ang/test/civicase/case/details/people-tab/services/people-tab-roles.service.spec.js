@@ -73,7 +73,7 @@
             end_date: null,
             email: caseClient.email,
             phone: caseClient.phone,
-            role: 'Client',
+            role: ts('Client'),
             start_date: null
           }));
         });
@@ -246,7 +246,7 @@
 
         it('only contains the roles for that type', () => {
           expect(peopleTabRoles.list).toEqual([jasmine.objectContaining({
-            role: 'Client'
+            role: ts('Client')
           })]);
         });
       });
@@ -281,8 +281,19 @@
         it('only contains the roles that match the given letter', () => {
           expect(peopleTabRoles.list).toEqual([jasmine.objectContaining({
             display_name: caseClient.display_name,
-            role: 'Client'
+            role: ts('Client')
           })]);
+        });
+      });
+
+      describe('when filtering by a non-existent role', () => {
+        beforeEach(() => {
+          peopleTabRoles.updateRolesList();
+          peopleTabRoles.filterRoles('', 'Applicant');
+        });
+
+        it('does not return any roles', () => {
+          expect(peopleTabRoles.list).toEqual([]);
         });
       });
     });

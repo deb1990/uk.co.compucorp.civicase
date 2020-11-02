@@ -4,7 +4,9 @@
     var element, $compile, $q, $rootScope, $scope, civicaseCrmApi, panelQueryScope, mockedResults;
     var NO_OF_RESULTS = 10;
 
-    beforeEach(module('civicase.templates', 'civicase', 'crmUtil'));
+    beforeEach(module('civicase.templates', 'civicase', 'crmUtil', function ($provide) {
+      $provide.value('civicaseCrmApi', jasmine.createSpy('civicaseCrmApi'));
+    }));
 
     beforeEach(inject(function (_$compile_, _$q_, _$rootScope_, _civicaseCrmApi_) {
       $compile = _$compile_;

@@ -155,9 +155,10 @@
      * Opens the popup for Creating PDF letter
      */
     function createPDFLetter () {
-      var pdfLetter = PrintMergeCaseAction.doAction([$scope.item]);
-
-      CRM.loadForm(CRM.url(pdfLetter.path, pdfLetter.query));
+      PrintMergeCaseAction.doAction([$scope.item])
+        .then(function (pdfLetter) {
+          CRM.loadForm(CRM.url(pdfLetter.path, pdfLetter.query));
+        });
     }
 
     /**

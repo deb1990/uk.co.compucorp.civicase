@@ -46,6 +46,18 @@
       contact_type_b: 'Individual',
       is_reserved: '0',
       is_active: '1'
+    },
+    {
+      id: '16',
+      name_a_b: 'Senior Services Coordinator is',
+      label_a_b: 'Senior Services Coordinator is',
+      name_b_a: 'Senior Services Coordinator',
+      label_b_a: 'Senior Services Coordinator',
+      description: 'Senior Services Coordinator',
+      contact_type_a: 'Individual',
+      contact_type_b: 'Individual',
+      is_reserved: '0',
+      is_active: '1'
     }
   ];
 

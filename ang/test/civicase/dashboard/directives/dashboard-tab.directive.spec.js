@@ -13,7 +13,10 @@
       });
     }
 
-    beforeEach(module('civicase.templates', 'civicase', 'crmUtil'));
+    beforeEach(module('civicase.templates', 'civicase', 'crmUtil', function ($provide) {
+      $provide.value('civicaseCrmApi', jasmine.createSpy('civicaseCrmApi'));
+    }));
+
     beforeEach(inject(function (_$controller_, _$rootScope_, _civicaseCrmApi_,
       _formatActivity_, _formatCase_, _ActivityStatusType_) {
       $controller = _$controller_;

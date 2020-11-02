@@ -11,6 +11,7 @@
           placeholder="Start Date"
           crm-ui-datepicker="{
             time: false,
+            maxDate: model.endDate.value,
             beforeShow: model.removeDatePickerHrefs,
             onChangeMonthYear: model.removeDatePickerHrefs
           }" />
@@ -34,7 +35,7 @@
           placeholder="End Date"
           crm-ui-datepicker="{
             time: false,
-            minDate: model.endDate.minDate,
+            maxDate: model.endDate.maxDate,
             beforeShow: model.removeDatePickerHrefs,
             onChangeMonthYear: model.removeDatePickerHrefs
           }" />
@@ -64,7 +65,7 @@
           ng-change="model.errorMessage.reassignmentDate = null"
           crm-ui-datepicker="{
             time: false,
-            minDate: model.reassignmentDate.minDate,
+            maxDate: model.reassignmentDate.maxDate,
             beforeShow: model.removeDatePickerHrefs,
             onChangeMonthYear: model.removeDatePickerHrefs
           }" />

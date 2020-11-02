@@ -58,7 +58,7 @@ class CRM_Civicase_Service_CaseTypeCategoryEventHandler {
 
     $menu = $caseCategoryInstance->getMenuObject();
     $menu->createItems($caseCategoryName);
-    $this->customFieldExtends->create($caseCategoryName, "Case ({$caseCategoryName})");
+    $this->customFieldExtends->create($caseCategoryName, "Case ({$caseCategoryName})", $caseCategoryInstance->getCustomGroupEntityTypesFunction());
     $this->customData->create($caseCategoryName);
   }
 

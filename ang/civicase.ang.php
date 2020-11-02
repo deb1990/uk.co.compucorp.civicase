@@ -116,8 +116,8 @@ function set_case_actions(&$options, $caseCategoryPermissions) {
       'icon' => 'fa-print',
     ],
     [
-      'title' => ts('Email Case Manager'),
-      'action' => 'EmailManagers',
+      'title' => ts('Email - send now'),
+      'action' => 'Email',
       'icon' => 'fa-envelope-o',
     ],
     [

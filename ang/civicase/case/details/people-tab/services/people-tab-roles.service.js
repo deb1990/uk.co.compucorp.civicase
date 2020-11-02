@@ -169,7 +169,7 @@
      */
     function getClientRoles () {
       return _.filter(caseContacts, {
-        role: ts('Client')
+        role: 'Client'
       })
         .map(function (contact) {
           return {
@@ -180,7 +180,7 @@
             end_date: null,
             email: contact.email,
             phone: contact.phone,
-            role: contact.role,
+            role: ts('Client'),
             start_date: null
           };
         });

@@ -54,5 +54,24 @@
         expect(returnedCaseType).toEqual(expectedCaseType);
       });
     });
+
+    describe('when getting all roles for the given case type category id', () => {
+      let expectedResult, returnedResult;
+
+      beforeEach(() => {
+        const casesCategoryId = '1';
+        expectedResult = [
+          { name: 'Homeless Services Coordinator', id: '11' },
+          { name: 'Health Services Coordinator', id: '12' },
+          { name: 'Benefits Specialist', id: '14' },
+          { name: 'Senior Services Coordinator', id: '16' }
+        ];
+        returnedResult = CaseType.getAllRolesByCategoryID(casesCategoryId);
+      });
+
+      it('returns all the unique case roles', () => {
+        expect(returnedResult).toEqual(expectedResult);
+      });
+    });
   });
 })(CRM._);

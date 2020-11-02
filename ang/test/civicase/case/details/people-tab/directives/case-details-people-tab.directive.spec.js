@@ -364,7 +364,7 @@ describe('Case Details People Tab', () => {
             reassignmentDate: {
               value: undefined,
               show: false,
-              minDate: undefined
+              maxDate: undefined
             }
           }),
           jasmine.any(Object)
@@ -509,7 +509,7 @@ describe('Case Details People Tab', () => {
           $rootScope.$digest();
         });
 
-        it('marks the current role relationship as finished', () => {
+        it('marks the current role relationship as finished using the active field', () => {
           expect($scope.refresh).toHaveBeenCalledWith(jasmine.arrayContaining([
             ['Relationship', 'get', {
               relationship_type_id: relationshipTypeId,
@@ -517,7 +517,7 @@ describe('Case Details People Tab', () => {
               case_id: $scope.item.id,
               is_active: 1,
               'api.Relationship.create': {
-                is_active: 0, end_date: getDialogModel().endDate.value
+                is_active: 0
               }
             }]
           ]));

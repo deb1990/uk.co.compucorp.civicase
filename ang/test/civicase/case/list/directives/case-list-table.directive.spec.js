@@ -4,8 +4,9 @@
   describe('CivicaseCaseListTable Directive', function () {
     var $compile, $rootScope, $scope, originaljQueryHeightFn;
 
-    beforeEach(module('civicase', 'civicase.templates', function ($controllerProvider) {
+    beforeEach(module('civicase', 'civicase.templates', function ($controllerProvider, $provide) {
       $controllerProvider.register('CivicaseCaseListTableController', function () {});
+      $provide.value('civicaseCrmApi', jasmine.createSpy('civicaseCrmApi'));
     }));
 
     beforeEach(inject(function (_$compile_, _$rootScope_) {
@@ -124,6 +125,7 @@
       });
 
       $provide.value('crmThrottle', crmThrottleMock);
+      $provide.value('civicaseCrmApi', jasmine.createSpy('civicaseCrmApi'));
     }));
 
     beforeEach(inject(function (_$controller_, _$q_, _$route_, $rootScope,

@@ -83,7 +83,9 @@
     describe('Activity Month Nav Controller', function () {
       var $scope, $controller, $rootScope, civicaseCrmApi, $q, monthNavMockData;
 
-      beforeEach(module('civicase', 'civicase.data'));
+      beforeEach(module('civicase', 'civicase.data', function ($provide) {
+        $provide.value('civicaseCrmApi', jasmine.createSpy('civicaseCrmApi'));
+      }));
 
       beforeEach(inject(function (_$controller_, _$rootScope_, _civicaseCrmApi_, _$q_, _monthNavMockData_) {
         $controller = _$controller_;

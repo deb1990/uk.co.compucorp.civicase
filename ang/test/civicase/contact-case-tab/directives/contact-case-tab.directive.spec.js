@@ -2,25 +2,28 @@
 
 ((_) => {
   describe('Contact Case Tab', () => {
-    var $controller, $rootScope, $scope, CaseTypeCategoryTranslationService,
+    var $q, $controller, $rootScope, $scope, CaseTypeCategoryTranslationService,
       civicaseCrmApi, mockContactId, mockContactService, AddCase;
 
     beforeEach(module('civicase.data', 'civicase', ($provide) => {
       mockContactService = jasmine.createSpyObj('Contact', ['getCurrentContactID']);
 
       $provide.value('Contact', mockContactService);
+      $provide.value('civicaseCrmApi', jasmine.createSpy('civicaseCrmApi'));
     }));
 
-    beforeEach(inject((_$controller_, _$rootScope_, _CaseTypeCategoryTranslationService_,
-      _civicaseCrmApi_, _AddCase_) => {
+    beforeEach(inject((_$q_, _$controller_, _$rootScope_,
+      _CaseTypeCategoryTranslationService_, _civicaseCrmApi_, _AddCase_) => {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
+      $q = _$q_;
       CaseTypeCategoryTranslationService = _CaseTypeCategoryTranslationService_;
       AddCase = _AddCase_;
       civicaseCrmApi = _civicaseCrmApi_;
 
       spyOn(CaseTypeCategoryTranslationService, 'restoreTranslation');
       spyOn(CaseTypeCategoryTranslationService, 'storeTranslation');
+      civicaseCrmApi.and.returnValue($q.resolve());
     }));
 
     beforeEach(() => {

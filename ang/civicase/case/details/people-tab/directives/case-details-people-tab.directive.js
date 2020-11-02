@@ -258,7 +258,7 @@
 
       if (!isReplacingClient) {
         promptForContactParams.reassignmentDate = {
-          minDate: role.start_date,
+          maxDate: moment().format('YYYY-MM-DD'),
           value: moment().isBefore(moment(role.start_date))
             ? moment(role.start_date).format('YYYY-MM-DD')
             : moment().format('YYYY-MM-DD')
@@ -296,7 +296,7 @@
             hideContactField: true,
             role: role,
             endDate: {
-              minDate: role.start_date,
+              maxDate: moment().format('YYYY-MM-DD'),
               value: moment().format('YYYY-MM-DD')
             }
           },
@@ -652,12 +652,12 @@
         endDate: {
           value: options.endDate.value,
           show: !!options.endDate.value,
-          minDate: options.endDate.minDate
+          maxDate: moment().format('YYYY-MM-DD')
         },
         reassignmentDate: {
           value: options.reassignmentDate.value,
           show: !!options.reassignmentDate.value,
-          minDate: options.reassignmentDate.minDate
+          maxDate: options.reassignmentDate.maxDate
         }
       };
 
@@ -782,12 +782,17 @@
      * @returns {Array} API call
      */
     function unassignRoleCall (role, endDate) {
+      var isEndDateSameAsToday = moment().isSame(endDate, 'day');
+      var unassignRelationshipApiCall = isEndDateSameAsToday
+        ? { is_active: 0 }
+        : { end_date: endDate };
+
       return ['Relationship', 'get', {
         relationship_type_id: role.relationship_type_id,
         contact_id_b: role.contact_id,
         case_id: item.id,
         is_active: 1,
-        'api.Relationship.create': { is_active: 0, end_date: endDate }
+        'api.Relationship.create': unassignRelationshipApiCall
       }];
     }
 

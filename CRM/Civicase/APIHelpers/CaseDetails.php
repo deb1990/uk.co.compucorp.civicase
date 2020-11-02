@@ -92,31 +92,25 @@ class CRM_Civicase_APIHelpers_CaseDetails {
    *   Contains the data used for filtering.
    */
   public static function handleContactInvolvedFilters(CRM_Utils_SQL_Select $sql, array $params) {
+    self::prepareParamsForFiltering($params, 'contact_involved');
     $hasActivitiesForInvolvedContact = CRM_Utils_Array::value(
       'has_activities_for_involved_contact', $params, NULL);
 
-    list(
-      'query' => $roleQuery,
-      'where' => $roleWhere
-    ) = self::getRoleQuery([
-      'can_be_client' => TRUE,
-      'all_case_roles_selected' => TRUE,
-      'contact' => $params['contact_involved'],
-    ]);
+    $caseContactFilter = CRM_Core_DAO::createSQLFilter('contact_id', $params['contact_involved']);
+    $relContactFilter = CRM_Core_DAO::createSQLFilter('contact_id_b', $params['contact_involved']);
+    $query = "
+      SELECT case_id FROM civicrm_case_contact WHERE {$caseContactFilter}
+      UNION DISTINCT
+      SELECT case_id FROM civicrm_relationship WHERE is_active = 1 AND {$relContactFilter} AND case_id IS NOT NULL
+    ";
 
     if ($hasActivitiesForInvolvedContact) {
-      $activitiesFilter = self::getRoleActivityFilter($params['contact_involved']);
-
-      $roleWhere .= " OR $activitiesFilter";
+      $query .= " UNION DISTINCT" . self::getCaseInvolvedInByActivityFilter($params['contact_involved']);
     }
 
-    $roleQuery->where($roleWhere);
-
-    $roleSubQueryString = $roleQuery->toSql();
-
     $sql->join('case_involvement', "
-      JOIN ($roleSubQueryString) AS case_involvement
-      ON case_involvement.id = a.id
+      JOIN ($query) AS case_involvement
+      ON case_involvement.case_id = a.id
     ");
   }
 
@@ -205,7 +199,7 @@ class CRM_Civicase_APIHelpers_CaseDetails {
   }
 
   /**
-   * Returns the condition needed for filtering by contact activities.
+   * Returns the condition needed for filtering cases involved in by activity.
    *
    * @param string $contactId
    *   The ID of the activity's contact.
@@ -213,22 +207,17 @@ class CRM_Civicase_APIHelpers_CaseDetails {
    * @return string
    *   The condition that can be used for filtering.
    */
-  private static function getRoleActivityFilter($contactId) {
-    $contactFilter = CRM_Core_DAO::createSQLFilter(
-      'civicrm_activity_contact.contact_id', $contactId);
+  private static function getCaseInvolvedInByActivityFilter($contactId) {
+    $activityContactFilter = CRM_Core_DAO::createSQLFilter('cac.contact_id', $contactId);
 
-    return "civicrm_case.id IN (
-      SELECT DISTINCT(case_id)
-      FROM civicrm_case_activity
-      WHERE activity_id IN (
-        SELECT DISTINCT(civicrm_activity.id)
-        FROM civicrm_activity
-        INNER JOIN civicrm_activity_contact
-        ON civicrm_activity.id = civicrm_activity_contact.activity_id
-        WHERE civicrm_activity.is_deleted = 0
-          AND civicrm_activity.is_current_revision = 1
-          AND civicrm_activity.is_test = 0
-          AND $contactFilter))";
+    return "
+      SELECT DISTINCT case_id
+      FROM civicrm_case_activity ca
+        INNER JOIN civicrm_activity a ON ca.activity_id = a.id
+        INNER JOIN civicrm_activity_contact cac ON a.id = cac.activity_id AND {$activityContactFilter}
+      WHERE a.is_deleted = 0
+        AND a.is_current_revision = 1
+        AND a.is_test = 0";
   }
 
   /**

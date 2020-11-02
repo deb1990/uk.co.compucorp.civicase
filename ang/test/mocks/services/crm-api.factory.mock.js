@@ -1,12 +1,12 @@
 /* eslint-env jasmine */
 
 (function () {
-  var module = angular.module('civicase');
+  var module = angular.module('crmUtil');
 
-  module.factory('civicaseCrmApi', ['$q', function ($q) {
-    var civicaseCrmApi = jasmine.createSpy('civicaseCrmApi');
-    civicaseCrmApi.and.returnValue($q.resolve());
+  module.factory('crmApi', ['$q', function ($q) {
+    var crmApi = jasmine.createSpy('crmApi');
+    crmApi.and.returnValue($q.resolve());
 
-    return civicaseCrmApi;
+    return crmApi;
   }]);
 })();

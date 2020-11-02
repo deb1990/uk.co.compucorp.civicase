@@ -160,13 +160,21 @@ class CRM_Civicase_Service_CaseRoleCreationPostProcess extends CRM_Civicase_Serv
    *   API request parameters.
    */
   private function setRelationshipsInactive(array $relIds, array $params) {
+    $endDate = empty($params['end_date']) ? new DateTime() : new DateTime($params['end_date']);
+    $today = new DateTime();
+    $isEndDateSameAsToday = $endDate->format('Y-m-d') === $today->format('Y-m-d');
+    $relationshipActiveFields = $isEndDateSameAsToday
+      ? ['is_active' => 0]
+      : ['end_date' => $params['end_date']];
+
     foreach ($relIds as $relId) {
-      civicrm_api3('Relationship', 'create', [
-        'id' => $relId,
-        'is_active' => 0,
-        'end_date' => !empty($params['start_date']) ? $params['start_date'] : date('Y-m-d'),
-        'skip_post_processing' => 1,
-      ]);
+      civicrm_api3('Relationship', 'create', array_merge(
+        $relationshipActiveFields,
+        [
+          'id' => $relId,
+          'skip_post_processing' => 1,
+        ]
+      ));
     }
   }
 
