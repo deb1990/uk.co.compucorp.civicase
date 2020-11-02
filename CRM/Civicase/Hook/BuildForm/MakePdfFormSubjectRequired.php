@@ -18,7 +18,7 @@ class CRM_Civicase_Hook_BuildForm_MakePdfFormSubjectRequired {
       return;
     }
     if ($form->elementExists('subject')) {
-      $form->addRule('subject', '', 'required');
+      $form->addRule('subject', 'Subject is a required field', 'required');
     }
   }
 
