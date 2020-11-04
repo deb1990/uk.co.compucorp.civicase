@@ -3,30 +3,31 @@
 ((_) => {
   describe('workflow duplicate controller', () => {
     let $controller, $rootScope, $q, $scope, dialogService, CaseTypesMockData,
-      civicaseCrmApiMock, crmStatus;
+      crmStatus, DuplicateWorkflowCasemanagement;
 
     beforeEach(module('workflow', 'civicase.data', ($provide) => {
-      civicaseCrmApiMock = jasmine.createSpy('civicaseCrmApi');
-
-      $provide.value('civicaseCrmApi', civicaseCrmApiMock);
       $provide.value('dialogService',
         jasmine.createSpyObj('dialogService', ['open', 'close'])
       );
     }));
 
     beforeEach(inject((_$q_, _$controller_, _$rootScope_, _CaseTypesMockData_,
-      _dialogService_, _crmStatus_) => {
+      _dialogService_, _crmStatus_, _DuplicateWorkflowCasemanagement_) => {
       $q = _$q_;
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       dialogService = _dialogService_;
       CaseTypesMockData = _CaseTypesMockData_;
       crmStatus = _crmStatus_;
+      DuplicateWorkflowCasemanagement = _DuplicateWorkflowCasemanagement_;
 
       dialogService.dialogs = {};
-      civicaseCrmApiMock.and.returnValue($q.resolve({
+
+      spyOn(DuplicateWorkflowCasemanagement, 'create');
+      DuplicateWorkflowCasemanagement.create.and.returnValue($q.resolve({
         values: CaseTypesMockData.getSequential()
       }));
+
       spyOn($rootScope, '$broadcast').and.callThrough();
     }));
 
@@ -51,7 +52,6 @@
           $scope.clickHandler(workflow);
 
           expectedWorkflowObject = _.clone(workflow);
-          expectedWorkflowObject.id = null;
           expectedWorkflowObject.title = '';
           expectedWorkflowObject.name = '';
 
@@ -92,8 +92,7 @@
               expectedApiParam = _.extend(_.clone(workflow), {
                 title: 'New Workflow',
                 name: 'new_workflow',
-                sequential: true,
-                id: null
+                sequential: true
               });
             });
 
@@ -102,8 +101,8 @@
             });
 
             it('duplicates the workflow', () => {
-              expect(civicaseCrmApiMock)
-                .toHaveBeenCalledWith('CaseType', 'create', expectedApiParam);
+              expect(DuplicateWorkflowCasemanagement.create)
+                .toHaveBeenCalledWith(expectedApiParam);
             });
 
             it('shows saving notification while save is in progress', () => {
@@ -136,7 +135,7 @@
 
           describe('when there is error while saving', () => {
             beforeEach(() => {
-              civicaseCrmApiMock.and.returnValue($q.reject({
+              DuplicateWorkflowCasemanagement.create.and.returnValue($q.reject({
                 error_code: 'already exists'
               }));
               saveButtonClickFunction();
@@ -161,7 +160,7 @@
           });
 
           it('does not call the api to save the workflow', () => {
-            expect(civicaseCrmApiMock).not.toHaveBeenCalled();
+            expect(DuplicateWorkflowCasemanagement.create).not.toHaveBeenCalled();
           });
         });
       });

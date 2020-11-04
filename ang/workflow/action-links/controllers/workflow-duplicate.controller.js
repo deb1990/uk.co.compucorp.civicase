@@ -7,12 +7,13 @@
    * @param {object} $scope scope object
    * @param {object} $rootScope root scope object
    * @param {object} $q angular's queue service
+   * @param {object} $injector angular's injector service
    * @param {object} dialogService service to open dialog box
    * @param {object} crmStatus civicrm status service
-   * @param {object} civicaseCrmApi service to use civicrm api
+   * @param {object} CaseTypeCategory case type category service
    */
-  function WorkflowDuplicateController ($scope, $rootScope, $q, dialogService, crmStatus,
-    civicaseCrmApi) {
+  function WorkflowDuplicateController ($scope, $rootScope, $q, $injector,
+    dialogService, crmStatus, CaseTypeCategory) {
     $scope.submitInProgress = false;
     $scope.clickHandler = clickHandler;
 
@@ -26,7 +27,6 @@
         workflow: _.clone(workflow)
       };
 
-      model.workflow.id = null;
       model.workflow.title = '';
       model.workflow.name = '';
 
@@ -85,9 +85,17 @@
           $rootScope.$broadcast('workflow::list::refresh');
         })
         .catch(function (error) {
-          var errorMessage = error.error_code === 'already exists'
-            ? ts('This title is already in use. Please choose another')
-            : error.error_message;
+          var errorMessage;
+
+          _.each(error, function (errorObj) {
+            if (errorObj.error_code === 'already exists') {
+              errorMessage = ts('This title is already in use. Please choose another');
+
+              return false;
+            } else {
+              errorMessage = errorObj.error_message;
+            }
+          });
 
           return $q.reject({
             error_message: errorMessage
@@ -113,9 +121,41 @@
       workflow.name = generateWorkflowName(workflow.title);
       workflow.sequential = true;
 
-      return civicaseCrmApi('CaseType', 'create', workflow).then(function (workflowData) {
-        return workflowData.values[0];
-      });
+      var instanceName = CaseTypeCategory.getCaseTypeCategoryInstance(workflow.case_type_category).name;
+
+      var service = getServiceToDuplicate(instanceName);
+
+      return service.create(_.clone(workflow));
+    }
+
+    /**
+     * Searches for a angularJS service for the current case type category
+     * instance, if not found, returns the service for case management service
+     * as default.
+     *
+     * @param {string} instanceName name of the instance
+     * @returns {object/null} service
+     */
+    function getServiceToDuplicate (instanceName) {
+      var CASE_MANAGEMENT_INSTACE_NAME = 'case_management';
+
+      try {
+        return $injector.get(
+          'DuplicateWorkflow' + capitalizeFirstLetterAndRemoveUnderScore(instanceName)
+        );
+      } catch (e) {
+        return $injector.get(
+          'DuplicateWorkflow' + capitalizeFirstLetterAndRemoveUnderScore(CASE_MANAGEMENT_INSTACE_NAME)
+        );
+      }
+    }
+
+    /**
+     * @param {string} string string to capitalize
+     * @returns {string} capitalized string
+     */
+    function capitalizeFirstLetterAndRemoveUnderScore (string) {
+      return (string.charAt(0).toUpperCase() + string.slice(1)).replace('_', '');
     }
 
     /**

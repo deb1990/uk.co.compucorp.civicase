@@ -1,11 +1,11 @@
 /* eslint-env jasmine */
 ((_, angular) => {
   describe('CaseTypeCategory Provider', () => {
-    let CaseTypeCategory;
+    let CaseTypeCategory, CaseCategoryInstanceTypeData;
 
     describe('when all case type categories are requested', () => {
       beforeEach(() => {
-        module('civicase-base');
+        module('civicase-base', 'civicase.data');
         injectDependencies();
       });
 
@@ -18,7 +18,7 @@
       var expectedResult;
 
       beforeEach(() => {
-        module('civicase-base');
+        module('civicase-base', 'civicase.data');
         injectDependencies();
 
         expectedResult = _.find(CRM['civicase-base'].caseTypeCategories, function (caseTypeCategory) {
@@ -35,7 +35,7 @@
       var expectedResult;
 
       beforeEach(() => {
-        module('civicase-base');
+        module('civicase-base', 'civicase.data');
         injectDependencies();
 
         expectedResult = _.find(CRM['civicase-base'].caseTypeCategories, function (caseTypeCategory) {
@@ -54,7 +54,7 @@
       beforeEach(() => {
         CRM['civicase-base'].caseTypeCategoriesWhereUserCanAccessActivities = ['awards'];
 
-        module('civicase-base');
+        module('civicase-base', 'civicase.data');
         injectDependencies();
 
         expectedResults = [_.find(CRM['civicase-base'].caseTypeCategories, function (caseTypeCategory) {
@@ -69,7 +69,7 @@
 
     describe('when checking if a case type category is part of sent instance type', () => {
       beforeEach(() => {
-        module('civicase-base');
+        module('civicase-base', 'civicase.data');
         injectDependencies();
       });
 
@@ -82,7 +82,7 @@
       var expectedResult;
 
       beforeEach(() => {
-        module('civicase-base');
+        module('civicase-base', 'civicase.data');
         injectDependencies();
 
         expectedResult = {
@@ -102,7 +102,7 @@
       var expectedResult;
 
       beforeEach(() => {
-        module('civicase-base');
+        module('civicase-base', 'civicase.data');
         injectDependencies();
 
         expectedResult = [{
@@ -118,12 +118,30 @@
       });
     });
 
+    describe('when searching for instance of a case type category', () => {
+      var expectedResult;
+
+      beforeEach(() => {
+        module('civicase-base', 'civicase.data');
+        injectDependencies();
+
+        expectedResult = _.find(CaseCategoryInstanceTypeData.get(), function (instance) {
+          return instance.name === 'case_management';
+        });
+      });
+
+      it('returns the instance of the case type category', () => {
+        expect(CaseTypeCategory.getCaseTypeCategoryInstance('1')).toEqual(expectedResult);
+      });
+    });
+
     /**
      * Injects and hoists the dependencies needed by this spec.
      */
     function injectDependencies () {
-      inject((_CaseTypeCategory_) => {
+      inject((_CaseTypeCategory_, _CaseCategoryInstanceTypeData_) => {
         CaseTypeCategory = _CaseTypeCategory_;
+        CaseCategoryInstanceTypeData = _CaseCategoryInstanceTypeData_;
       });
     }
   });

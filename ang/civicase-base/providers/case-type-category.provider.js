@@ -22,6 +22,7 @@
     this.$get = $get;
     this.findByName = findByName;
     this.findAllByInstance = findAllByInstance;
+    this.getCaseTypeCategoryInstance = getCaseTypeCategoryInstance;
     this.getAll = getAll;
     this.isInstance = isInstance;
 
@@ -36,6 +37,7 @@
         findById: findById,
         findByName: findByName,
         findAllByInstance: findAllByInstance,
+        getCaseTypeCategoryInstance: getCaseTypeCategoryInstance,
         getCategoriesWithAccessToActivity: getCategoriesWithAccessToActivity,
         isInstance: isInstance
       };
@@ -80,6 +82,22 @@
       }).value;
 
       return caseTypeCategory.instance_id === instanceID;
+    }
+
+    /**
+     * Get instance object for the sent case type category value
+     *
+     * @param {string} caseTypeCategoryValue case type category value
+     * @returns {boolean} if the sent case type category is part of the sent instance
+     */
+    function getCaseTypeCategoryInstance (caseTypeCategoryValue) {
+      var instanceID = _.find(caseCategoryInstanceMapping, function (instanceMap) {
+        return instanceMap.category_id === caseTypeCategoryValue;
+      }).instance_id;
+
+      return _.find(caseCategoryInstanceType, function (instance) {
+        return instance.value === instanceID;
+      });
     }
 
     /**

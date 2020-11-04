@@ -22,18 +22,22 @@ function get_workflow_js_files() {
   ], GlobRecursive::get(dirname(__FILE__) . '/workflow/*.js'));
 }
 
+$requires = [
+  'crmUi',
+  'ngRoute',
+  'dialogService',
+  'civicase-base',
+];
+
+$requires = CRM_Workflow_Hook_addDependentAngularModules::invoke($requires);
+
 return [
   'css' => [
     'css/*.css',
   ],
   'js' => get_workflow_js_files(),
   'settings' => $options,
-  'requires' => [
-    'crmUi',
-    'ngRoute',
-    'dialogService',
-    'civicase-base',
-  ],
+  'requires' => $requires,
   'partials' => [
     'ang/workflow',
   ],
