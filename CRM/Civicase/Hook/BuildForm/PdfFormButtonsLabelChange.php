@@ -21,7 +21,6 @@ class CRM_Civicase_Hook_BuildForm_PdfFormButtonsLabelChange {
     $buttons = $buttonGroup->getElements();
     $buttonLabels = [
       '_qf_PDF_submit_preview' => 'Download Preview',
-      '_qf_PDF_upload' => 'Save and create document',
     ];
     foreach ($buttons as $button) {
       $attr = $button->getAttributes();

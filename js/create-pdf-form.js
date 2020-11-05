@@ -1,48 +1,41 @@
-(function ($, _, currentCaseCategory) {
-  $(document).on('crmLoad', function () {
-    (function init () {
-      var $pdfSaveAndCreateButtonSelector = '[data-identifier="buttons[_qf_PDF_upload]"]';
+(function ($, _) {
+  $(document).one('crmLoad', function () {
+    var $dialog;
 
-      $('body').off('click', $pdfSaveAndCreateButtonSelector);
-      $('body').on('click', $pdfSaveAndCreateButtonSelector, redirectOnFileDownload);
+    (function init () {
+      var $form = $('.CRM_Contact_Form_Task_PDF');
+
+      $('body').off('submit', $form);
+      $('body').on('submit', $form, openFileNamePopup);
     })();
 
     /**
-     * Redirect the user after pdf generation.
+     * Open popup to ask filename
+     *
+     * @param {object} e event
      */
-    function redirectOnFileDownload () {
+    function openFileNamePopup (e) {
       if (!isFormValid()) {
         return;
       }
 
-      var caseId = getCaseId();
-      var $activityTabInContactRecordScreen = $('.ui-tabs-anchor[title="Activities"]');
+      var $form = $(e.target);
+      var $clickedButtonIdentifier = $(document.activeElement).data('identifier');
+      var isDownloadDocumentButtonClicked = $clickedButtonIdentifier === 'buttons[_qf_PDF_upload]';
 
-      if (caseId) {
-        var activityTabUrl = '/civicrm/case/a/?' +
-          'case_type_category=' + currentCaseCategory +
-          '#/case/list?cf={"case_type_category":"' + currentCaseCategory + '"}' +
-          '&caseId=' + caseId + '&focus=1&tab=Activities';
+      var pdfFileNameHiddenField = $('#pdf_filename_hidden');
 
-        document.location = activityTabUrl;
-      } else if ($activityTabInContactRecordScreen.length) {
-        $activityTabInContactRecordScreen.click();
+      if (pdfFileNameHiddenField.length > 0 || !isDownloadDocumentButtonClicked) {
+        return;
       }
 
-      $('.ui-dialog-titlebar-close').click();
-    }
+      e.preventDefault();
 
-    /**
-     * Returns the case id if available.
-     *
-     * @returns {number} case id.
-     */
-    function getCaseId () {
-      var entryUrlElem = $('[name="entryURL"]');
-      if (entryUrlElem.length) {
-        var entryUrl = entryUrlElem.val();
-        return getParameterByName('caseid', entryUrl);
-      }
+      $dialog = $('<div class="civicase__pdf-filename-dialog"></div>')
+        .html(getPopupMarkUp($form))
+        .dialog(getPopupSettings());
+
+      $('form', $dialog).crmValidate();
     }
 
     /**
@@ -51,38 +44,79 @@
      * @returns {boolean} form validity.
      */
     function isFormValid () {
-      return $('.CRM_Contact_Form_Task_PDF').find('.crm-error:not(.valid)').length === 0;
+      return $('.CRM_Contact_Form_Task_PDF').valid();
     }
 
     /**
-     * Returns parameter value from a query string.
+     * Get html markup for the filename popup
      *
-     * @param {string} name  name of the parameter.
-     * @param {string} url query string.
-     * @returns {any} parameter value.
+     * @param {object} $form form element
+     *
+     * @returns {string} markup
      */
-    function getParameterByName (name, url) {
-      url = parse(decodeURIComponent(url || window.location.href));
+    function getPopupMarkUp ($form) {
+      var subject = $form.find('#subject').val();
 
-      return url[name];
+      return '<form id="civicase__pdf-filename-form">' +
+        '<div class="crm-form-block crm-block crm-contact-task-pdf-form-block">' +
+          '<table class="form-layout-compressed">' +
+             '<tbody>' +
+                '<tr>' +
+                  '<td class="label-left">' +
+                    '<label for="template">Select a filename</label>' +
+                  '</td>' +
+                '</tr>' +
+                '<tr>' +
+                  '<td>' +
+                    '<input type="text" id="pdf_filename" pattern="[a-zA-Z0-9-_. ]+" class="huge crm-form-text required" value="' + subject + '">' +
+                  '</td>' +
+                '</tr>' +
+              '</tbody>' +
+            '</table>' +
+          '</div>' +
+        '</form>';
     }
 
     /**
-     * Parses sent url inot json object
+     * Get settings for the filename popup
      *
-     * @param {string} url the URL to use for parsing its parameter
-     * @returns {object} returns the given URL's parameters as an object.
+     * @returns {object} settings object
      */
-    function parse (url) {
-      var urlParamPairs = url.split('?')
-        .slice(1)
-        .join('')
-        .split('&amp;')
-        .map(function (paramNameAndValue) {
-          return paramNameAndValue.split('=');
-        });
+    function getPopupSettings () {
+      return {
+        title: ts('Download Document'),
+        width: 'auto',
+        height: 'auto',
+        buttons: [
+          {
+            text: 'Download Document',
+            click: function () {
+              if (!$('#civicase__pdf-filename-form').valid()) {
+                return;
+              }
+              $('#pdf_filename_hidden').remove();
 
-      return _.zipObject(urlParamPairs);
+              var $form = $('.CRM_Contact_Form_Task_PDF');
+              $('<input>').attr({
+                type: 'hidden',
+                id: 'pdf_filename_hidden',
+                name: 'filename',
+                value: $('#pdf_filename').val()
+              }).appendTo($form);
+
+              $dialog.remove();
+              $('[data-identifier="buttons[_qf_PDF_upload]"]').trigger('click');
+              $('#pdf_filename_hidden').remove();
+            }
+          },
+          {
+            text: 'Cancel',
+            click: function () {
+              $dialog.remove();
+            }
+          }
+        ]
+      };
     }
   });
-})(CRM.$, CRM._, CRM['civicase-base'].currentCaseCategory);
+})(CRM.$, CRM._);
