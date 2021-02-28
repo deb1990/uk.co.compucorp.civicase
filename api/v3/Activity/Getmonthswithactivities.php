@@ -1,31 +1,41 @@
 <?php
 
+/**
+ * @file
+ * Activity.Getmonthswithactivities file.
+ */
+
 use CRM_Civicase_Event_Listener_ActivityFilter as CivicaseActivityFilter;
 
 /**
- * Activity.Getmonthswithactivities API specification
+ * Activity.Getmonthswithactivities API specification.
  *
- * @param array $spec description of fields supported by this API call
+ * @param array $spec
+ *   Description of fields supported by this API call.
  *
- * @return void
  * @see http://wiki.civicrm.org/confluence/display/CRMDOC/API+Architecture+Standards
  */
-function _civicrm_api3_activity_Getmonthswithactivities_spec(&$spec) {
+function _civicrm_api3_activity_Getmonthswithactivities_spec(array &$spec) {
   $activityFields = civicrm_api3('Activity', 'getfields', array('api_action' => 'get'));
   $spec = $activityFields['values'];
 }
 
 /**
- * Returns list of unique [MM, YYYY] month-year pair with at least an activity
- *
- * @method Activity.Getmonthswithactivities API
+ * Returns list of unique [MM, YYYY] month-year pair with at least an activity.
  *
  * @param array $params
- * @return array API result with list of months
+ *   API parameters.
+ *
+ * @return array
+ *   API result with list of months.
+ *
  * @see civicrm_api3_create_success
+ *
  * @throws API_Exception
+ *
+ * @method Activity.Getmonthswithactivities API
  */
-function civicrm_api3_activity_Getmonthswithactivities($params) {
+function civicrm_api3_activity_Getmonthswithactivities(array $params) {
   $passed_options = $params['options'] ? $params['options'] : [];
   $params = array_merge($params, [
     'sequential' => 1,
@@ -37,13 +47,14 @@ function civicrm_api3_activity_Getmonthswithactivities($params) {
 
   if ($params['isMyActivitiesFilter']) {
     $activities = get_records_from_activity_getcontactactivities_api($params);
-  } else {
+  }
+  else {
     $activities = get_records_from_activity_get_api($params);
   }
 
   $grouped_activity_dates = [];
 
-  foreach($activities as $activity) {
+  foreach ($activities as $activity) {
     list($activity_year, $activity_month) = explode('-', $activity['activity_date_time']);
 
     $activity_group_index = -1;
@@ -61,7 +72,8 @@ function civicrm_api3_activity_Getmonthswithactivities($params) {
         'month' => $activity_month,
         'count' => 1,
       );
-    } else {
+    }
+    else {
       $grouped_activity_dates[$activity_group_index]['count'] = $grouped_activity_dates[$activity_group_index]['count'] + 1;
     }
   }
@@ -70,24 +82,30 @@ function civicrm_api3_activity_Getmonthswithactivities($params) {
 }
 
 /**
- * Get Activities when My Activity filter is true
+ * Get Activities when My Activity filter is true.
  *
  * @param array $params
- * @return array activities
+ *   API parameters.
+ *
+ * @return array
+ *   A list of activities.
  */
-function get_records_from_activity_getcontactactivities_api($params) {
+function get_records_from_activity_getcontactactivities_api(array $params) {
   $contactActivitySelector = new CRM_Civicase_Activity_ContactActivitiesSelector();
 
   return $contactActivitySelector->getPaginatedActivitiesForContact($params)['values'];
 }
 
 /**
- * Get Activities when My Activity filter is not true
+ * Get Activities when My Activity filter is not true.
  *
  * @param array $params
- * @return array activities
+ *   API parameters.
+ *
+ * @return array
+ *   A list of activities.
  */
-function get_records_from_activity_get_api($params) {
+function get_records_from_activity_get_api(array $params) {
   $options = _civicrm_api3_get_options_from_params($params, FALSE, 'Activity', 'get');
   $sql = CRM_Utils_SQL_Select::fragment();
 
