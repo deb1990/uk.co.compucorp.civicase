@@ -70,7 +70,7 @@
        * after changing.
        */
       function updateModelChangeBehaviour () {
-        model.$$setOptions({
+        model.$overrideModelOptions({
           updateOn: 'blur change',
           debounce: {
             blur: 0,
