@@ -1,13 +1,14 @@
 name: Create Release Pull Request
 
 on:
-  workflow_dispatch:
-    jira_ticket_number:
-      description: JIRA Ticket number for the release
-      required: true
-    version_tobe_released:
-      description: Version number to be released
-      required: true
+ workflow_dispatch:
+    inputs:
+      jira_ticket_number:
+        description: JIRA Ticket number for the release
+        required: true
+      version_tobe_released:
+        description: Version number to be released
+        required: true
 jobs:
   Test:
     runs-on: ubuntu-latest
