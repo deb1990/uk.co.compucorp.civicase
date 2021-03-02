@@ -13,7 +13,7 @@ jobs:
   Test:
     runs-on: ubuntu-latest
     steps:
-      - uses: deb1990/release-pr-github-action@1.0
+      - uses: deb1990/release-pr-github-action@1.0.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION_NAME: 2.10.0
